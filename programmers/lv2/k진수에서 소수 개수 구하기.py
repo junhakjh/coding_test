@@ -4,7 +4,6 @@ def solution(n, k):
     answer = 0
     
     arr = k_Jinsu(n, k).split('0')
-    
     for item in arr:
         if item == '':
             continue
