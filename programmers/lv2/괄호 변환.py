@@ -1,16 +1,16 @@
 from collections import deque
 
 def solution(p):
-    return dfs(p)
+    return recursion(p)
 
 def recursion(string):
     if is_right(string):
         return string
     u, v = division(string)
     if is_right(u):
-        return u + dfs(v)
+        return u + recursion(v)
     else:
-        new_str = '(' + dfs(v) + ')'
+        new_str = '(' + recursion(v) + ')'
         for char in u[1:-1]:
             if char == '(':
                 new_str += ')'
