@@ -3,7 +3,7 @@ from collections import deque
 def solution(p):
     return dfs(p)
 
-def dfs(string):
+def recursion(string):
     if is_right(string):
         return string
     u, v = division(string)
