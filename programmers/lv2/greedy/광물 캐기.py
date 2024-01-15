@@ -1,4 +1,3 @@
-from itertools import permutations
 import heapq
 
 def solution(picks, minerals):
