@@ -10,7 +10,7 @@ class Solution:
                     new_word = word + dict_word
                     if len(new_word) > len(s):
                         continue
-                    if s[:len(new_word)] == new_word:
+                    if s.startswith(new_word):
                         new_candidate.add(new_word)
             candidate = new_candidate
 
