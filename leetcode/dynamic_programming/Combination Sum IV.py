@@ -5,7 +5,6 @@ class Solution:
             if i <= target:
                 arr[i] = 1
         for i, cur_num in enumerate(arr):
-            print(arr)
             if cur_num == 0:
                 continue
             for num in nums:
