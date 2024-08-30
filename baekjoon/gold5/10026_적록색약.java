@@ -4,8 +4,8 @@ import java.io.*;
 /**
  * 
  * @author 김준하
- * @since 2024. 8. 29.
- * @link https://swexpertacademy.com/main/talk/solvingClub/problemView.do?solveclubId=AZCWNHD6B-8DFASB&contestProbId=AV5-BEE6AK0DFAVl&probBoxId=AZGNXHWapmQDFAQP&type=PROBLEM&problemBoxTitle=0826%EC%A3%BC&problemBoxCnt=10
+ * @since 2024. 8. 30.
+ * @link https://www.acmicpc.net/problem/10026
  * @timecomplex
  * @performance 14,492 kb, 116 ms
  * @category #bfs
