@@ -1,42 +1,30 @@
 import java.util.*;
 import java.io.*;
 
-/**
- * 
- * @author 김준하
- * @since 2024. 8. 28.
- * @link https://www.acmicpc.net/problem/15683
- * @timecomplex
- * @performance 37,244 kb, 288 ms
- * @category #백트래킹
- * @note
- */
-
-public class Solution {
-	static final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-	static final StringBuilder output = new StringBuilder();
+public class Main {
+	static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+	static StringBuilder output = new StringBuilder();
 	static StringTokenizer st;
 
-	static final int[] dr = { 0, 1, 0, -1 }, dc = { 1, 0, -1, 0 };
+	static final int[] dr = { -1, 0, 1, 0 }, dc = { 0, 1, 0, -1 };
+	static final int[][][] cctvDirs = { { { 0 }, { 1 }, { 2 }, { 3 } }, { { 0, 2 }, { 1, 3 } },
+			{ { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 } }, { { 0, 1, 2 }, { 1, 2, 3 }, { 2, 3, 0 }, { 3, 0, 1 } },
+			{ { 0, 1, 2, 3 } } };
 
-	static int n, m;
+	static int N, M;
 	static int[][] map;
-	static List<int[]> cctvs = new ArrayList<>();
-
+	static List<int[]> cctvList;
 	static int answer = Integer.MAX_VALUE;
 
-	static boolean check(int r, int c) {
-		if (r < 0 || r >= n || c < 0 || c >= m || map[r][c] == 6) {
-			return false;
-		}
-		return true;
+	static boolean isIn(int r, int c) {
+		return r >= 0 && r < N && c >= 0 && c < M;
 	}
 
-	static void dfs(int curI) {
-		if (curI == cctvs.size()) {
+	static void dfs(int cctvIdx) {
+		if (cctvIdx == cctvList.size()) {
 			int sum = 0;
-			for (int r = 0; r < n; r++) {
-				for (int c = 0; c < m; c++) {
+			for (int r = 0; r < N; r++) {
+				for (int c = 0; c < M; c++) {
 					if (map[r][c] == 0) {
 						sum++;
 					}
@@ -46,158 +34,62 @@ public class Solution {
 			return;
 		}
 
-		int r = cctvs.get(curI)[0], c = cctvs.get(curI)[1];
-		switch (map[r][c]) {
-		case 1:
-			for (int i = 0; i < 4; i++) {
-				List<int[]> toZero = new ArrayList<>();
-				int nr = r + dr[i], nc = c + dc[i];
-				while (check(nr, nc)) {
-					if (map[nr][nc] == 0) {
-						map[nr][nc] = -1;
-						toZero.add(new int[] { nr, nc });
+		int[] coor = cctvList.get(cctvIdx);
+		int cctvCheckNum = (cctvIdx + 1) * 10;
+		int cr = coor[0], cc = coor[1];
+		for (int[] cctvDir : cctvDirs[map[cr][cc] - 1]) {
+			for (int di : cctvDir) {
+				int r = cr, c = cc;
+				while (isIn(r, c)) {
+					if (map[r][c] == 0) {
+						map[r][c] = cctvCheckNum;
 					}
-					nr += dr[i];
-					nc += dc[i];
-				}
-				dfs(curI + 1);
-				for (int[] coor : toZero) {
-					map[coor[0]][coor[1]] = 0;
+					if (map[r][c] == 6) {
+						break;
+					}
+					r += dr[di];
+					c += dc[di];
 				}
 			}
-			break;
-		case 2:
-			for (int i = 0; i < 2; i++) {
-				List<int[]> toZero = new ArrayList<>();
-				int nr = r + dr[i], nc = c + dc[i];
-				while (check(nr, nc)) {
-					if (map[nr][nc] == 0) {
-						map[nr][nc] = -1;
-						toZero.add(new int[] { nr, nc });
+			dfs(cctvIdx + 1);
+			for (int di : cctvDir) {
+				int r = cr, c = cc;
+				while (isIn(r, c)) {
+					if (map[r][c] == cctvCheckNum) {
+						map[r][c] = 0;
 					}
-					nr += dr[i];
-					nc += dc[i];
-				}
-				nr = r - dr[i];
-				nc = c - dc[i];
-				while (check(nr, nc)) {
-					if (map[nr][nc] == 0) {
-						map[nr][nc] = -1;
-						toZero.add(new int[] { nr, nc });
+					if (map[r][c] == 6) {
+						break;
 					}
-					nr -= dr[i];
-					nc -= dc[i];
-				}
-				dfs(curI + 1);
-				for (int[] coor : toZero) {
-					map[coor[0]][coor[1]] = 0;
+					r += dr[di];
+					c += dc[di];
 				}
 			}
-			break;
-		case 3:
-			for (int i = 0; i < 4; i++) {
-				List<int[]> toZero = new ArrayList<>();
-				int nr = r + dr[i], nc = c + dc[i];
-				while (check(nr, nc)) {
-					if (map[nr][nc] == 0) {
-						map[nr][nc] = -1;
-						toZero.add(new int[] { nr, nc });
-					}
-					nr += dr[i];
-					nc += dc[i];
-				}
-				nr = r + dr[(i + 1) % 4];
-				nc = c + dc[(i + 1) % 4];
-				while (check(nr, nc)) {
-					if (map[nr][nc] == 0) {
-						map[nr][nc] = -1;
-						toZero.add(new int[] { nr, nc });
-					}
-					nr += dr[(i + 1) % 4];
-					nc += dc[(i + 1) % 4];
-				}
-				dfs(curI + 1);
-				for (int[] coor : toZero) {
-					map[coor[0]][coor[1]] = 0;
-				}
-			}
-			break;
-		case 4:
-			for (int i = 0; i < 4; i++) {
-				List<int[]> toZero = new ArrayList<>();
-				int nr = r + dr[i], nc = c + dc[i];
-				while (check(nr, nc)) {
-					if (map[nr][nc] == 0) {
-						map[nr][nc] = -1;
-						toZero.add(new int[] { nr, nc });
-					}
-					nr += dr[i];
-					nc += dc[i];
-				}
-				nr = r + dr[(i + 1) % 4];
-				nc = c + dc[(i + 1) % 4];
-				while (check(nr, nc)) {
-					if (map[nr][nc] == 0) {
-						map[nr][nc] = -1;
-						toZero.add(new int[] { nr, nc });
-					}
-					nr += dr[(i + 1) % 4];
-					nc += dc[(i + 1) % 4];
-				}
-				nr = r + dr[(i + 2) % 4];
-				nc = c + dc[(i + 2) % 4];
-				while (check(nr, nc)) {
-					if (map[nr][nc] == 0) {
-						map[nr][nc] = -1;
-						toZero.add(new int[] { nr, nc });
-					}
-					nr += dr[(i + 2) % 4];
-					nc += dc[(i + 2) % 4];
-				}
-				dfs(curI + 1);
-				for (int[] coor : toZero) {
-					map[coor[0]][coor[1]] = 0;
-				}
-			}
-			break;
-		case 5:
-			List<int[]> toZero = new ArrayList<>();
-			for (int i = 0; i < 4; i++) {
-				int nr = r + dr[i], nc = c + dc[i];
-				while (check(nr, nc)) {
-					if (map[nr][nc] == 0) {
-						map[nr][nc] = -1;
-						toZero.add(new int[] { nr, nc });
-					}
-					nr += dr[i];
-					nc += dc[i];
-				}
-			}
-			dfs(curI + 1);
-			for (int[] coor : toZero) {
-				map[coor[0]][coor[1]] = 0;
-			}
-			break;
 		}
+	}
+
+	static int solution() {
+		dfs(0);
+
+		return answer;
 	}
 
 	public static void main(String[] args) throws Exception {
 		st = new StringTokenizer(input.readLine());
-		n = Integer.parseInt(st.nextToken());
-		m = Integer.parseInt(st.nextToken());
-		map = new int[n][m];
-		for (int r = 0; r < n; r++) {
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		map = new int[N][M];
+		cctvList = new ArrayList<>();
+		for (int r = 0; r < N; r++) {
 			st = new StringTokenizer(input.readLine());
-			for (int c = 0; c < m; c++) {
+			for (int c = 0; c < M; c++) {
 				map[r][c] = Integer.parseInt(st.nextToken());
-				if (map[r][c] != 0 && map[r][c] != 6) {
-					cctvs.add(new int[] { r, c });
+				if (map[r][c] >= 1 && map[r][c] <= 5) {
+					cctvList.add(new int[] { r, c });
 				}
 			}
 		}
 
-		dfs(0);
-
-		System.out.println(answer);
+		System.out.println(solution());
 	}
 }
