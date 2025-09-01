@@ -6,62 +6,62 @@ public class Main {
 	static StringBuilder output = new StringBuilder();
 	static StringTokenizer st;
 
-	static final int[][] scores = { { 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40 },
-			{ 0, 13, 16, 19, 25, 30, 35, 40 }, { 0, 22, 24, 25, 30, 35, 40 }, { 0, 28, 27, 26, 25, 30, 35, 40 } };
+	static final int[] redDir = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 31, 21, 22, 28, 24,
+			28, 26, 27, 28, 29, 30, 31, 32, 0 }, blueDir = { 0, 20, 23, 25 },
+			scores = { 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 13, 16, 19, 22, 24,
+					28, 27, 26, 25, 30, 35, 40, 0 };
+	static final int FINAL = 32;
 
-	static int[] dice;
-	static int score;
+	static int[] nums, map;
+	static int answer = 0;
 
-	static void dfs(int turn, int[][] positions, int curScore) {
-		if (turn == 10) {
-			score = Math.max(score, curScore);
+	static void dfs(int idx, int scoreSum, int[] positions) {
+		if (idx == 10) {
+			answer = Math.max(answer, scoreSum);
 			return;
 		}
 
 		label: for (int i = 0; i < 4; i++) {
-			if (positions[i][0] == -1) {
+			if (positions[i] == FINAL) {
 				continue;
 			}
-			int pos0 = positions[i][0], pos1 = positions[i][1];
-			if (pos0 == 0 && pos1 != 0 && pos1 != 20 && pos1 % 5 == 0) {
-				positions[i] = new int[] { pos1 / 5, 0 };
+			int prevPos = positions[i], nextPos = positions[i];
+			for (int j = 0; j < nums[idx]; j++) {
+				if (j == 0 && (nextPos == 5 || nextPos == 10 || nextPos == 15)) {
+					nextPos = blueDir[nextPos / 5];
+					continue;
+				}
+				nextPos = redDir[nextPos];
+				if (nextPos == FINAL) {
+					break;
+				}
 			}
-			for (int[] pos : positions) {
-				if (positions[i][1] + dice[turn] < scores[positions[i][0]].length && pos[0] >= 0) {
-					if ((pos[0] == 0 && positions[i][0] == 0 && pos[1] == positions[i][1] + dice[turn])
-							|| (pos[0] != 0 && positions[i][0] != 0
-									&& scores[pos[0]][pos[1]] == scores[positions[i][0]][positions[i][1] + dice[turn]])
-							|| (scores[pos[0]][pos[1]] == 40
-									&& scores[positions[i][0]][positions[i][1] + dice[turn]] == 40)) {
-						positions[i][0] = pos0;
-						positions[i][1] = pos1;
+			if (nextPos != FINAL) {
+				for (int j = 0; j < 4; j++) {
+					if (i != j && positions[j] == nextPos) {
 						continue label;
 					}
 				}
 			}
-			int addScore = 0;
-			positions[i][1] += dice[turn];
-			if (positions[i][1] >= scores[positions[i][0]].length) {
-				positions[i][0] = -1;
-			} else {
-				addScore = scores[positions[i][0]][positions[i][1]];
-			}
-			dfs(turn + 1, positions, curScore + addScore);
-			positions[i][0] = pos0;
-			positions[i][1] = pos1;
+			positions[i] = nextPos;
+			dfs(idx + 1, scoreSum + scores[nextPos], positions);
+			positions[i] = prevPos;
 		}
+	}
+
+	static int solution() {
+		dfs(0, 0, new int[4]);
+
+		return answer;
 	}
 
 	public static void main(String[] args) throws Exception {
 		st = new StringTokenizer(input.readLine());
-		dice = new int[10];
-		score = 0;
+		nums = new int[10];
 		for (int i = 0; i < 10; i++) {
-			dice[i] = Integer.parseInt(st.nextToken());
+			nums[i] = Integer.parseInt(st.nextToken());
 		}
 
-		dfs(0, new int[][] { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } }, 0);
-
-		System.out.println(score);
+		System.out.println(solution());
 	}
 }
